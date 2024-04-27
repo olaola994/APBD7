@@ -63,4 +63,18 @@ public class WarehouseController : ControllerBase
 
         return Ok("Product " + key + " added to warehouse successfully.");
     }
+
+    [HttpPost("AddProductToWarehouse/StoredProc")]
+    public async Task<IActionResult> AddProductToWarehouseUsingStoredProc([FromBody] AddProductToWarehouseDTO request)
+    {
+        try
+        {
+            int newId = await _warehouseRepository.AddProductToWarehouseUsingStoredProc(request.IdProduct, request.IdWarehouse, request.Amount, request.CreatedAt);
+            return Ok(new { Id = newId });
+            
+        }catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

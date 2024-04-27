@@ -1,3 +1,4 @@
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using APBD7.Models.DTOs;
@@ -150,6 +151,29 @@ public class WarehouseRepository : IWarehouseRepository
         int insertedId = result != null ? Convert.ToInt32(result) : 0;
     
         return insertedId;
+    }
+
+    public async Task<int> AddProductToWarehouseUsingStoredProc(int idProduct, int idWarehouse, int amount,
+        DateTime createdAt)
+    {
+        using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
+        await connection.OpenAsync();
+
+        using SqlCommand command = connection.CreateCommand();
+        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "AddProductToWarehouse";
+        command.Parameters.AddWithValue("@IdProduct", idProduct);
+        command.Parameters.AddWithValue("@IdWarehouse", idWarehouse);
+        command.Parameters.AddWithValue("@Amount", amount);
+        command.Parameters.AddWithValue("@CreatedAt", createdAt);
+        SqlParameter newIdParameter = new SqlParameter("@NewId", SqlDbType.Int);
+        newIdParameter.Direction = ParameterDirection.Output;
+        command.Parameters.Add(newIdParameter);
+
+        await command.ExecuteNonQueryAsync();
+
+        int newId = (int)command.Parameters["@NewId"].Value;
+        return newId;
     }
     
 }

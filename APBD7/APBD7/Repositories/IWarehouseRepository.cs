@@ -11,4 +11,5 @@ public interface IWarehouseRepository
     Task<bool> IsOrderFulfilled(int IdOrder);
     Task UpdateOrder(int IdOrder);
     Task<int> AddProductToWarehouse(AddProductToWarehouseDTO request);
+    Task<int> AddProductToWarehouseUsingStoredProc(int idProduct, int idWarehouse, int amount, DateTime createdAt);
 }
